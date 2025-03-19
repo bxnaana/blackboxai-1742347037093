@@ -13,6 +13,17 @@
     <style>
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .font-opensans { font-family: 'Open Sans', sans-serif; }
+        .cart-popup {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 50;
+        }
+        .cart-popup.show {
+            transform: translateX(0);
+        }
+        .checkout-modal {
+            z-index: 60;
+        }
     </style>
 </head>
 <body class="font-opensans">
@@ -27,6 +38,10 @@
                     <a href="index.html" class="text-[#0B3954] hover:text-[#087E8B] font-medium">Home</a>
                     <a href="services.html" class="text-[#087E8B] font-medium">Services</a>
                     <a href="contact.html" class="text-[#0B3954] hover:text-[#087E8B] font-medium">Contact</a>
+                    <button id="cartButton" class="relative">
+                        <i class="fas fa-shopping-cart text-2xl text-[#0B3954]"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-[#FF5A5F] text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                    </button>
                 </div>
                 <div class="md:hidden flex items-center">
                     <button class="mobile-menu-button">
@@ -42,6 +57,49 @@
             <a href="contact.html" class="block py-2 px-4 text-sm hover:bg-[#087E8B] hover:text-white">Contact</a>
         </div>
     </nav>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartPopup" class="cart-popup fixed right-0 top-0 h-full w-96 bg-white shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-montserrat text-2xl font-bold">Your Cart</h2>
+            <button id="closeCart" class="text-2xl">&times;</button>
+        </div>
+        <div id="cartItems" class="space-y-4 mb-6">
+            <!-- Cart items will be inserted here -->
+        </div>
+        <div class="border-t pt-4">
+            <div class="flex justify-between mb-4">
+                <span class="font-bold">Total:</span>
+                <span id="cartTotal" class="font-bold">0 kr</span>
+            </div>
+            <button id="checkoutButton" class="w-full bg-[#087E8B] text-white py-3 rounded-lg mb-3 hover:bg-[#066974]">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="checkout-modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg w-96">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-montserrat text-2xl font-bold">Checkout</h2>
+                <button id="closeCheckout" class="text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <h3 class="font-bold mb-2">Select Payment Method:</h3>
+                <button class="w-full bg-[#5C92FF] text-white py-3 rounded-lg mb-3 hover:bg-[#4A7AD9] flex items-center justify-center">
+                    <img src="https://www.swish.nu/favicon.ico" alt="Swish" class="w-6 h-6 mr-2">
+                    Pay with Swish
+                </button>
+                <button class="w-full bg-[#087E8B] text-white py-3 rounded-lg mb-3 hover:bg-[#066974]">
+                    <i class="fas fa-credit-card mr-2"></i>Pay with Card
+                </button>
+                <button class="w-full bg-[#0B3954] text-white py-3 rounded-lg hover:bg-[#092c40]">
+                    <i class="fas fa-file-invoice mr-2"></i>Pay with Invoice
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Services Header -->
     <div class="bg-[#0B3954] text-white py-16">
@@ -63,30 +121,48 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Regular Home Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Dusting and wiping surfaces</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Vacuum cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Bathroom sanitization</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Kitchen cleaning</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">799 kr</span>
+                            <button onclick="addToCart('Regular Home Cleaning', 799)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Deep Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Detailed corner cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Window washing</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Appliance cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Cabinet organization</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">1299 kr</span>
+                            <button onclick="addToCart('Deep Cleaning', 1299)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Move In/Out Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Complete property cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Wall cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Floor deep cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Fixture cleaning</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">1599 kr</span>
+                            <button onclick="addToCart('Move In/Out Cleaning', 1599)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,30 +176,48 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Office Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Workspace sanitization</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Common area maintenance</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Restroom cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Trash removal</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">2499 kr</span>
+                            <button onclick="addToCart('Office Cleaning', 2499)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Retail Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Floor maintenance</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Display cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Window cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Entry/Exit maintenance</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">1999 kr</span>
+                            <button onclick="addToCart('Retail Cleaning', 1999)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Industrial Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Warehouse cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Equipment cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Safety compliance</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Waste management</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">3999 kr</span>
+                            <button onclick="addToCart('Industrial Cleaning', 3999)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -137,44 +231,51 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Post-Construction</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Debris removal</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Dust removal</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Surface cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Final inspection</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">2999 kr</span>
+                            <button onclick="addToCart('Post-Construction Cleaning', 2999)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Event Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Pre-event setup</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>During event maintenance</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Post-event cleanup</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Waste management</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">1799 kr</span>
+                            <button onclick="addToCart('Event Cleaning', 1799)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="font-montserrat text-xl font-bold mb-3">Seasonal Cleaning</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Spring cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Winter preparation</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Holiday cleaning</li>
                             <li><i class="fas fa-check text-[#087E8B] mr-2"></i>Special occasions</li>
                         </ul>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-bold">1499 kr</span>
+                            <button onclick="addToCart('Seasonal Cleaning', 1499)" class="add-to-cart bg-[#087E8B] text-white px-4 py-2 rounded hover:bg-[#066974]">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Call to Action -->
-    <div class="bg-[#087E8B] text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="font-montserrat text-3xl font-bold mb-4">Ready to Get Started?</h2>
-            <p class="text-xl mb-8">Contact us today for a free quote and consultation</p>
-            <a href="contact.html" class="bg-[#FF5A5F] hover:bg-[#ff4448] text-white font-bold py-3 px-8 rounded-full transition duration-300">
-                Contact Us Now
-            </a>
         </div>
     </div>
 
@@ -222,6 +323,97 @@
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
+
+        // Shopping Cart functionality
+        let cart = [];
+        const cartButton = document.getElementById('cartButton');
+        const cartPopup = document.getElementById('cartPopup');
+        const closeCart = document.getElementById('closeCart');
+        const cartItems = document.getElementById('cartItems');
+        const cartCount = document.getElementById('cartCount');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkoutButton = document.getElementById('checkoutButton');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const closeCheckout = document.getElementById('closeCheckout');
+
+        // Add to cart function
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+            showCart();
+        }
+
+        // Show cart
+        function showCart() {
+            cartPopup.classList.add('show');
+        }
+
+        // Hide cart
+        function hideCart() {
+            cartPopup.classList.remove('show');
+        }
+
+        // Update cart display
+        function updateCart() {
+            cartCount.textContent = cart.length;
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                cartItems.innerHTML += `
+                    <div class="flex justify-between items-center p-2 border-b">
+                        <div>
+                            <p class="font-medium">${item.name}</p>
+                            <p class="text-gray-600">${item.price} kr</p>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            cartTotal.textContent = total + ' kr';
+            checkoutButton.disabled = cart.length === 0;
+            checkoutButton.style.opacity = cart.length === 0 ? '0.5' : '1';
+        }
+
+        // Remove item from cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        // Event Listeners
+        cartButton.addEventListener('click', showCart);
+        closeCart.addEventListener('click', hideCart);
+
+        // Checkout modal
+        checkoutButton.addEventListener('click', () => {
+            if (cart.length > 0) {
+                checkoutModal.classList.remove('hidden');
+            }
+        });
+
+        closeCheckout.addEventListener('click', () => {
+            checkoutModal.classList.add('hidden');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === checkoutModal) {
+                checkoutModal.classList.add('hidden');
+            }
+        });
+
+        // Prevent clicks inside cart popup from closing it
+        cartPopup.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Initialize cart
+        updateCart();
     </script>
 </body>
 </html>
